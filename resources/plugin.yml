@@ -1,0 +1,15 @@
+name: WorldSync
+main: com.jseb.worldsync.WorldSync
+version: 1.0
+author: tills13
+
+commands:
+  link:
+    description: initiate db link
+    usage: /<command>
+  backup:
+    description: backup world
+    usage: /<command>
+  restore:
+    description: restore world
+    usage: /<command>
