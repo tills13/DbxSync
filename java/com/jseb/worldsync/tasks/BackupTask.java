@@ -10,20 +10,24 @@ import java.text.DecimalFormat;
 
 import com.dropbox.client2.exception.DropboxException;
 import com.dropbox.client2.exception.DropboxUnlinkedException;
+import com.dropbox.client2.exception.DropboxPartialFileException;
 import com.dropbox.client2.session.WebAuthSession;
 import com.dropbox.client2.ProgressListener;
 import com.dropbox.client2.DropboxAPI;
 
 public class BackupTask implements Runnable {
-	public WorldSync plugin;
-	DropboxAPI.ChunkedUploader uploader;
+	public static WorldSync plugin;
+	public static DropboxAPI.ChunkedUploader uploader;
+	public boolean isActive;
 
 	public BackupTask(WorldSync plugin) {
 		this.plugin = plugin;
+		this.isActive = false;
 	}
 
 	@Override
 	public void run() {
+		this.isActive = true;
 		try {
 			WebAuthSession serverSession = new WebAuthSession(plugin.appKey, plugin.ACCESS_TYPE, plugin.accessToken);
 			DropboxAPI<?> api = new DropboxAPI<WebAuthSession>(serverSession);
@@ -43,22 +47,27 @@ public class BackupTask implements Runnable {
 			System.out.println("[WS] successfully backed up world.");
 		} catch (DropboxException e) {
 			if (e instanceof DropboxUnlinkedException) System.out.println("[WS] make sure you've linked app to your DropBox");
-			System.out.println("[WS] Dropbox error while backing up: " + e.getMessage());
+			else if (!(e instanceof DropboxPartialFileException)) System.out.println("[WS] Dropbox error while backing up: " + e.getMessage());
+			this.isActive = false;
 			return;
 		} catch (FileNotFoundException e) {
 			System.out.println("[WS] File IO error while backing up: " + e.getMessage());
+			this.isActive = false;
 			return;
 		} catch (IOException e) {
 			System.out.println("[WS] IO error while backing up: " + e.getMessage());
+			this.isActive = false;
 			return;
 		}	
+
+		this.isActive = false;
 	}
 
 	public void cancel() {
-		if (uploader != null) {
-			if (uploader.getActive()) uploader.abort();
-			System.out.println("[WS] backup cancelled");
-		}
+		if (uploader != null) if (uploader.getActive()) uploader.abort();
+
+		this.isActive = false;
+		System.out.println("[WS] backup cancelled");
 	}
 
 	public String getMostRecentBackup() {
