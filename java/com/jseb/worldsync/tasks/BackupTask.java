@@ -19,10 +19,12 @@ public class BackupTask implements Runnable {
 	public static WorldSync plugin;
 	public static DropboxAPI.ChunkedUploader uploader;
 	public boolean isActive;
+	public boolean verbose;
 
-	public BackupTask(WorldSync plugin) {
+	public BackupTask(WorldSync plugin, boolean verbose) {
 		this.plugin = plugin;
 		this.isActive = false;
+		this.verbose = verbose;
 	}
 
 	@Override
@@ -38,7 +40,8 @@ public class BackupTask implements Runnable {
 			uploader = api.getChunkedUploader(new FileInputStream(file), file.length());
 			ProgressListener plistener = new ProgressListener() {
 				public void onProgress(long bytes, long total) {
-					System.out.println(bytes/1000 + " of " + total/1000 + " KB transfered (" + new DecimalFormat("#.00").format(((double)bytes/(double)total) * 100) + "%)");
+					//if (bytes / 1000)
+					if (verbose) System.out.println(bytes/1000 + " of " + total/1000 + " KB transfered (" + new DecimalFormat("#.00").format(((double)bytes/(double)total) * 100) + "%)");
 				}
 			};
 
@@ -48,19 +51,13 @@ public class BackupTask implements Runnable {
 		} catch (DropboxException e) {
 			if (e instanceof DropboxUnlinkedException) System.out.println("[WS] make sure you've linked app to your DropBox");
 			else if (!(e instanceof DropboxPartialFileException)) System.out.println("[WS] Dropbox error while backing up: " + e.getMessage());
-			this.isActive = false;
-			return;
 		} catch (FileNotFoundException e) {
 			System.out.println("[WS] File IO error while backing up: " + e.getMessage());
-			this.isActive = false;
-			return;
 		} catch (IOException e) {
 			System.out.println("[WS] IO error while backing up: " + e.getMessage());
+		} finally {
 			this.isActive = false;
-			return;
-		}	
-
-		this.isActive = false;
+		}
 	}
 
 	public void cancel() {
