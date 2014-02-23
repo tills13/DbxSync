@@ -30,10 +30,12 @@ public class BackupTask implements Runnable {
 	@Override
 	public void run() {
 		this.isActive = true;
+		
 		try {
 			WebAuthSession serverSession = new WebAuthSession(plugin.appKey, plugin.ACCESS_TYPE, plugin.accessToken);
 			DropboxAPI<?> api = new DropboxAPI<WebAuthSession>(serverSession);
 			String localPath = getMostRecentBackup();
+
 			if (localPath == "") throw new IOException("no recent backups found");
 
 			File file = new File(localPath);
