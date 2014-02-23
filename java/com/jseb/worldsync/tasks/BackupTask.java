@@ -30,7 +30,7 @@ public class BackupTask implements Runnable {
 	@Override
 	public void run() {
 		this.isActive = true;
-		
+
 		try {
 			WebAuthSession serverSession = new WebAuthSession(plugin.appKey, plugin.ACCESS_TYPE, plugin.accessToken);
 			DropboxAPI<?> api = new DropboxAPI<WebAuthSession>(serverSession);
@@ -42,8 +42,7 @@ public class BackupTask implements Runnable {
 			uploader = api.getChunkedUploader(new FileInputStream(file), file.length());
 			ProgressListener plistener = new ProgressListener() {
 				public void onProgress(long bytes, long total) {
-					//if (bytes / 1000)
-					if (verbose) System.out.println(bytes/1000 + " of " + total/1000 + " KB transfered (" + new DecimalFormat("#.00").format(((double)bytes/(double)total) * 100) + "%)");
+					if (Math.floor(bytes / total) % 5 == 0 && verbose) System.out.println(bytes/1000 + " of " + total/1000 + " KB transfered (" + new DecimalFormat("#.00").format(((double)bytes/(double)total) * 100) + "%)"); // switch to logging
 				}
 			};
 
