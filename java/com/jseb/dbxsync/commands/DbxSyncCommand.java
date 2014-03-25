@@ -1,9 +1,9 @@
-package com.jseb.worldsync.commands;
+package com.jseb.dbxsync.commands;
 
-import com.jseb.worldsync.WorldSync;
-import com.jseb.worldsync.helpers.ZipHelper;
-import com.jseb.worldsync.tasks.SyncTask;
-import com.jseb.worldsync.tasks.DownloadTask;
+import com.jseb.dbxsync.DbxSync;
+import com.jseb.dbxsync.helpers.ZipHelper;
+import com.jseb.dbxsync.tasks.SyncTask;
+import com.jseb.dbxsync.tasks.DownloadTask;
 
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
@@ -24,13 +24,13 @@ import java.nio.file.Path;
 import java.util.Calendar;
 import java.util.logging.Logger;
 
-public class WorldSyncCommand implements CommandExecutor {
-	private final static Logger LOGGER = Logger.getLogger("WorldSyncCommand");
-	private WorldSync plugin;
+public class DbxSyncCommand implements CommandExecutor {
+	private final static Logger LOGGER = Logger.getLogger("DbxSyncCommand");
+	private DbxSync plugin;
 	public SyncTask syncTask;
 	public Thread restoreTask;
 
-	public WorldSyncCommand(WorldSync plugin) {
+	public DbxSyncCommand(DbxSync plugin) {
 		this.plugin = plugin;
 		this.syncTask = null;
 	}
@@ -47,7 +47,7 @@ public class WorldSyncCommand implements CommandExecutor {
 					} else  LOGGER.info("[WS] already authenticated, delete \"accesstoken.yml\" to re-auth");
 				} else {
 					if (plugin.webAuth == null) sender.sendMessage("[WS] you need to start the auth session");
-					else WorldSync.finishDropboxAuth(args[1], plugin.getDataFolder());
+					else DbxSync.finishDropboxAuth(args[1], plugin.getDataFolder());
 				}
 			} else if (args[0].equalsIgnoreCase("backup")) { // create a backup
 				if (args.length == 2) ZipHelper.zip(Bukkit.getServer().getWorld(args[1]).getWorldFolder(), new File(plugin.getDataFolder() + File.separator + "backups" + File.separator + Bukkit.getServer().getWorld(args[1]).getName() + "_backup.zip"));
@@ -68,7 +68,7 @@ public class WorldSyncCommand implements CommandExecutor {
 			} else if (args[0].equalsIgnoreCase("restore")) { // restore world from dropbox
 				if (this.syncTask != null && this.syncTask.isActive) sender.sendMessage("[WS] sync currently running, please wait until sync complete");
 				else {
-					final WorldSync mPlugin = plugin;
+					final DbxSync mPlugin = plugin;
 					this.restoreTask = new Thread(new Runnable() {
 						public void run() {
 							World mWorld = Bukkit.getServer().getWorld(args[1]);
@@ -107,7 +107,7 @@ public class WorldSyncCommand implements CommandExecutor {
 					for (File file : backupDir.listFiles()) sender.sendMessage("    " + file.getName());
 				} else sender.sendMessage("    no local backups; 'ws backup <world>' to perform a backup");
 
-				final WorldSync mPlugin = plugin;
+				final DbxSync mPlugin = plugin;
 				new Thread(new Runnable() {
 					public void run() {
 						try {
@@ -125,7 +125,7 @@ public class WorldSyncCommand implements CommandExecutor {
 					}
 				}).start();
 			} else if (args[0].equalsIgnoreCase("session")) {
-				final WorldSync mPlugin = plugin;
+				final DbxSync mPlugin = plugin;
 				new Thread(new Runnable() {
 					public void run() {
 						try {

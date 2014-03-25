@@ -1,6 +1,6 @@
-package com.jseb.worldsync.tasks;
+package com.jseb.dbxsync.tasks;
 
-import com.jseb.worldsync.WorldSync;
+import com.jseb.dbxsync.DbxSync;
 
 import java.io.FileInputStream;
 import java.io.File;
@@ -13,16 +13,16 @@ import com.dropbox.core.*;
 
 public class SyncTask implements Runnable {
 	private final static Logger LOGGER = Logger.getLogger("SyncTask");
-	public static WorldSync plugin;
+	public static DbxSync plugin;
 	public World world;	
 	public boolean isActive;
 	public boolean verbose;
 
-	public SyncTask(WorldSync plugin, World world) {
+	public SyncTask(DbxSync plugin, World world) {
 		this(plugin, world, false);
 	}
 
-	public SyncTask(WorldSync plugin, World world, boolean verbose) {
+	public SyncTask(DbxSync plugin, World world, boolean verbose) {
 		this.plugin = plugin;
 		this.world = world;
 		this.isActive = false;

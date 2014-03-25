@@ -1,4 +1,4 @@
-package com.jseb.worldsync.helpers;
+package com.jseb.dbxsync.helpers;
 
 import java.io.File;
 import java.io.FileInputStream;

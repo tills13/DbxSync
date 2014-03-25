@@ -1,10 +1,10 @@
-name: WorldSync
-main: com.jseb.worldsync.WorldSync
+name: DbxSync
+main: com.jseb.dbxsync.DbxSync
 version: 1.0
 author: tills13
 
 commands:
-  worldsync:
+  dbxsync:
     description: initiate db link
-    aliases: ws
-    usage: /<command> {link | backup | info}
+    aliases: dbxs
+    usage: '/<command> {link | backup | info}'
